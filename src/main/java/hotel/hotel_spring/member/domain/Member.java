@@ -21,14 +21,14 @@ public class Member extends BaseEntity {
     private String password;
     private String email;
     private String name; // 한글, 영문 선택 입력 가능하게 개발 예정
-    private int age;
+    private String age;
     private String sex;
     private String telNum;
     private String grade; // 회원 등급 [G, M] 2단계 일반, 회원
     private String role; // 권한 설정
 
     @Builder
-    public Member(String id, String password, String email, String name, int age, String sex, String telNum, String grade, String role) {
+    public Member(String id, String password, String email, String name, String age, String sex, String telNum, String grade, String role) {
         this.id = id;
         this.password = password;
         this.email = email;
