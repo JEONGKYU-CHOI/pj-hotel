@@ -11,6 +11,6 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     // 회원가입 및 JWT 검증 필요
     // ID 중복체크
-    Optional<Member> findById(String id);
+    Optional<Member> findByEmail(String email);
 
 }

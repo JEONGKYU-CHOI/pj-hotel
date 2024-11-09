@@ -1,10 +1,7 @@
 package hotel.hotel_spring.member.domain;
 
 import hotel.hotel_spring.common.domain.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,9 +14,10 @@ import lombok.NoArgsConstructor;
 public class Member extends BaseEntity {
 
     @Id
-    private String id;
-    private String password;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long memberId;
     private String email;
+    private String password;
     private String name; // 한글, 영문 선택 입력 가능하게 개발 예정
     private String age;
     private String sex;
@@ -28,10 +26,10 @@ public class Member extends BaseEntity {
     private String role; // 권한 설정
 
     @Builder
-    public Member(String id, String password, String email, String name, String age, String sex, String telNum, String grade, String role) {
-        this.id = id;
-        this.password = password;
+    public Member(Long memberId, String email, String password, String name, String age, String sex, String telNum, String grade, String role) {
+        this.memberId = memberId;
         this.email = email;
+        this.password = password;
         this.name = name;
         this.age = age;
         this.sex = sex;

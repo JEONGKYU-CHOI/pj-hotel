@@ -1,5 +1,6 @@
 package hotel.hotel_spring.member.controller;
 
+import hotel.hotel_spring.member.dto.req.LoginReq;
 import hotel.hotel_spring.member.dto.req.SignupReq;
 import hotel.hotel_spring.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor // 생성자 자동 생성
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/member")
 public class MemberController {
 
     private final MemberService memberService;
@@ -29,17 +30,17 @@ public class MemberController {
 
     @Operation(summary = "회원가입 요청")
     @PostMapping("/signup")
-    public ResponseEntity<String> SignUp(@Valid @RequestBody SignupReq req){
+    public ResponseEntity<String> SignUp(@Valid @RequestBody SignupReq signupReq){
 
         // ID 중복체크
-        if (memberService.memberIdCheck(req.getId())){
+        if (memberService.memberIdCheck(signupReq.getEmail())){
             String errorMsg = messageSource.getMessage("error.signup.already.exists", null, Locale.getDefault());
 
             return new ResponseEntity<>(errorMsg, HttpStatus.CONFLICT);
         }
 
         // DB 저장
-        memberService.saveMember(req);
+        memberService.saveMember(signupReq);
         String errorMsg = messageSource.getMessage("success.signup", null, Locale.getDefault());
         return ResponseEntity.ok(errorMsg);
     }
@@ -58,6 +59,12 @@ public class MemberController {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginReq loginReq){
 
+        String token = memberService.login(loginReq);
+
+        return ResponseEntity.ok(token);
+    }
 }
 

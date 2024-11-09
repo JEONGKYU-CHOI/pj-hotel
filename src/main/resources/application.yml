@@ -1,8 +1,9 @@
+
 spring:
   datasource:
-    url: jdbc:mariadb://localhost:3306/hotel?serverTimezone=UTC&characterEncoding=UTF-8
-    username: 'admin'
-    password: '0000'
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
 
   # 에러 메시지 관리
@@ -19,13 +20,10 @@ spring:
       format-sql: true
       ddl_auto: none
 
-
-#  security:
-#    jwt: ThisStatementIsJwtSecretKeyDoNoyUseThisStatement
-
-# jwt Secret Key
-#secret-key:
-#  jwt: ThisStatementIsJwtSecretKeyDoNoyUseThisStatement
+jwt:
+  header: Authorization
+  secret-key: ${JWT_SECRET-KEY}
+  token-validity-in-seconds: ${JWT_SECRET-TIME} # 1시간
 
 # spring swagger 설정
 springdoc:
