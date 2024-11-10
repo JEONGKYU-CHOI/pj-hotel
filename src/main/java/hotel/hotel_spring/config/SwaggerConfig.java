@@ -1,29 +1,28 @@
 package hotel.hotel_spring.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
-import lombok.RequiredArgsConstructor;
-import org.springdoc.core.models.GroupedOpenApi;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//@OpenAPIDefinition(
-//        info = @Info(title = "hotel api 명세서",
-//                description = "JK hotel 명세서",
-//                version = "v1"))
-//@RequiredArgsConstructor
-//@Configuration
-//public class SwaggerConfig {
-//
-//    @Bean
-//    public GroupedOpenApi groupedOpenApi(){
-//
-//        String[] paths = {"/v1/**"};
-//
-//        return GroupedOpenApi.builder()
-//                .group("JK hotel API v1") // 그룹 이름
-//                .pathsToMatch(paths)      // 그룹에 속하는 경로 패턴을 지정한다.
-//                .build();
-//    }
-//
-//}
+
+@Configuration
+@SecurityScheme(     // Authorize 버튼 활성화 위해서 보안 설정 필요!
+        name = "bearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT"
+)
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info().title("API Documentation")
+                        .version("1.0")
+                        .description("API documentation for the application"));
+    }
+
+}

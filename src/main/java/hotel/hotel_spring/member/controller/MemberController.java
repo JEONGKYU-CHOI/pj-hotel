@@ -4,12 +4,16 @@ import hotel.hotel_spring.member.dto.req.LoginReq;
 import hotel.hotel_spring.member.dto.req.SignupReq;
 import hotel.hotel_spring.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +34,8 @@ public class MemberController {
 
     @Operation(summary = "회원가입 요청")
     @PostMapping("/signup")
-    public ResponseEntity<String> SignUp(@Valid @RequestBody SignupReq signupReq){
+    @Transactional
+    public ResponseEntity<String> signUp(@Valid @RequestBody SignupReq signupReq){
 
         // ID 중복체크
         if (memberService.memberIdCheck(signupReq.getEmail())){
@@ -60,11 +65,34 @@ public class MemberController {
     }
 
     @PostMapping("/login")
+    @Transactional
     public ResponseEntity<String> login(@RequestBody LoginReq loginReq){
 
         String token = memberService.login(loginReq);
 
         return ResponseEntity.ok(token);
+    }
+
+    @Operation(summary = "Logout user", description = "Logs out the user by invalidating the token",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully logged out"),
+                    @ApiResponse(responseCode = "400", description = "Invalid Authorization header")
+            })
+    @GetMapping("/logout")
+    @SecurityRequirement(name = "bearerAuth")
+    @Transactional
+    public ResponseEntity<String> logout(HttpServletRequest request){
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")){
+
+            String token = authHeader.substring(7);
+            memberService.logout(token);
+            return ResponseEntity.ok("logout success.");
+        }else {
+            return ResponseEntity.badRequest().body("logout fail");
+        }
     }
 }
 

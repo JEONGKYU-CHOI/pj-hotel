@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자 전용
                         .requestMatchers("/api/user/**").hasRole("USER")   // 사용자 전용
 //                        .requestMatchers("/api/member/**", "/api/login/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**", "/webjars/**", "/api/member/**").permitAll()
+                        .requestMatchers( "swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**", "/webjars/**", "/api/member/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -12,18 +13,18 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity {
 
     @Column(updatable = false)
-    private LocalDateTime firstDt;
+    private String firstDt;
 
-    private LocalDateTime lastDt;
+    private String lastDt;
 
-    @PrePersist // 등록
-    protected void create() {
-        this.firstDt = LocalDateTime.now();
+    @PrePersist
+    public void create(){
+        this.firstDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     @PreUpdate
-    protected void update() {
-        this.lastDt = LocalDateTime.now();
+    public void update(){
+        this.lastDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
 }

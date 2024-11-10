@@ -2,6 +2,7 @@ package hotel.hotel_spring.security.details;
 
 import hotel.hotel_spring.member.domain.Member;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

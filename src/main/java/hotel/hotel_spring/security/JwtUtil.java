@@ -1,15 +1,24 @@
 package hotel.hotel_spring.security;
 
+import hotel.hotel_spring.member.domain.Member;
+import hotel.hotel_spring.member.repository.MemberRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JwtUtil {
+
+    @Autowired
+    private MemberRepository memberRepository;
 
 
     @Value("${jwt.secret-key}")
@@ -17,16 +26,23 @@ public class JwtUtil {
 
     // 전달된 UserDetails 객체의 username 정보를 기반으로 JWT를 생성합니다.
     public String generateToken(UserDetails userDetails){
+
+        // 토큰 생성시 권한 추가 로직
+        Optional<Member> member = memberRepository.findByEmail(userDetails.getUsername());
+
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())                          // JWT의 주제(subject)를 사용자의 username으로 설정합니다.
+                .claim("role", member.orElseThrow().getRole())               // 권한 추가
                 .setIssuedAt(new Date())                                        // JWT 발급 시간을 현재 시각으로 설정합니다.
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // JWT 만료 시간을 발급 시간으로부터 하루 후로 설정합니다.
                 .signWith(SignatureAlgorithm.HS256, secretKey)                  // 비밀 키 secret을 사용하여 HMAC SHA-256 알고리즘으로 서명을 추가합니다.
+                .setHeaderParam("type", "jwt")                            // jwt type 추가
                 .compact();                                                     // 최종적으로 JWT 토큰 문자열을 생성하여 반환합니다.
     }
 
     // JWT 토큰에서 사용자 이름 (username)을 추출합니다.
     public String extractUsername(String token){
+
         return Jwts.parser()
                 .setSigningKey(secretKey)                                      // JWT 토큰이 비밀 키 secret으로 서명되었음을 검증합니다.
                 .parseClaimsJws(token)                                         // 토큰의 서명이 유효하면, 토큰의 페이로드(claims)를 가져옵니다.
@@ -44,13 +60,13 @@ public class JwtUtil {
     // tJWT 토큰이 만료되었는지 확인합니다.
     // 토큰 만료날짜와 현재 시간을 비교하여 true, false 반환
     public Boolean isTokenExpired(String token){
-    return extractExpiration(token).before(new Date());
+        return extractExpiration(token).before(new Date());
     }
 
     // JWT 토큰의 만료 날짜를 추출합니다.
     // 토큰의 클레임을 가져와서 만료시간을 반환
     // * 토큰 클레임이란, 토큰 안에 사용자 정보 및 데이터 속성을 말함
-    private Date extractExpiration(String token){
+    public Date extractExpiration(String token){
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
